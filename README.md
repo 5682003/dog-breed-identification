@@ -2,10 +2,11 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11.9-blue?style=for-the-badge&logo=python)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.12.0-red?style=for-the-badge&logo=pytorch)
+![Model](https://img.shields.io/badge/Model-ResNet18-orange?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Completed-green?style=for-the-badge)
 ![Difficulty](https://img.shields.io/badge/Difficulty-Basic-yellow?style=for-the-badge)
 
-> Identify dog breeds from images using ResNet18 Transfer Learning with fine-tuning.
+> Identify dog breeds from images using **ResNet18 Transfer Learning** with two-phase fine-tuning across 120 breeds.
 
 ---
 
@@ -29,8 +30,9 @@ Input (3 × 224 × 224)
         ↓
 ┌─────────────────────────────────────┐
 │  ResNet18 Backbone (Pretrained)     │
-│  ImageNet weights                   │
-│  Feature Extractor                  │
+│  Weights: ImageNet                  │
+│  Layers: Conv → BN → ReLU × 8      │
+│  Output: 512-dim feature vector     │
 └─────────────────────────────────────┘
         ↓
 ┌─────────────────────────────────────┐
@@ -48,23 +50,24 @@ Output (120 Dog Breeds)
 
 ## ⚙️ Training Strategy
 
-### Phase 1 — Feature Extraction (5 epochs)
-- Backbone frozen
+### 🔒 Phase 1 — Feature Extraction (5 epochs)
+- ResNet18 backbone **frozen**
 - Only FC head trained
-- LR: 0.001
+- Learning Rate: `0.001`
 
-### Phase 2 — Fine Tuning (10 epochs)
-- Full network unfrozen
-- Differential learning rates
-- Backbone LR: 0.0001 | Head LR: 0.001
+### 🔓 Phase 2 — Fine Tuning (10 epochs)
+- Full network **unfrozen**
+- Differential learning rates applied
+- Backbone LR: `0.0001` | Head LR: `0.001`
 
 | Parameter | Value |
 |-----------|-------|
 | Total Epochs | 15 |
 | Batch Size | 32 |
 | Optimizer | Adam |
-| Scheduler | StepLR → CosineAnnealing |
-| Loss | CrossEntropy + Label Smoothing |
+| Phase 1 Scheduler | StepLR |
+| Phase 2 Scheduler | CosineAnnealingLR |
+| Loss Function | CrossEntropy + Label Smoothing |
 
 ---
 
@@ -80,6 +83,13 @@ Output (120 Dog Breeds)
 
 ### Sample Predictions
 ![Sample Predictions](sample_predictions.png)
+
+---
+
+## ⚠️ Model Weights
+
+> The trained model file `best_dog_breed_model.pth` exceeds GitHub's 100MB file size limit and therefore could not be uploaded to this repository.
+> To reproduce the weights, clone this repo and run `dog_breed_identification.py` — the best model will be saved automatically during training.
 
 ---
 
@@ -114,8 +124,7 @@ dog-breed-identification/
 ├── requirements.txt              # Dependencies
 ├── README.md                     # Project documentation
 ├── training_curves.png           # Loss & accuracy curves
-├── sample_predictions.png        # Sample predictions
-└── best_dog_breed_model.pth      # Best model weights
+└── sample_predictions.png        # Sample predictions grid
 ```
 
 ---
@@ -125,7 +134,7 @@ dog-breed-identification/
 - ✅ Transfer Learning with pretrained ResNet18
 - ✅ Feature extraction & fine-tuning strategies
 - ✅ Differential learning rates
-- ✅ Multi-class classification (120 classes)
+- ✅ Multi-class classification (120 breeds)
 - ✅ Data augmentation for small datasets
 
 ---
@@ -134,5 +143,5 @@ dog-breed-identification/
 
 - [Stanford Dogs Dataset](http://vision.stanford.edu/aditya86/ImageNetDogs/)
 - [ResNet Paper](https://arxiv.org/abs/1512.03385)
-- [PyTorch Transfer Learning](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)
+- [PyTorch Transfer Learning Tutorial](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)
 - [Reference Implementation](https://github.com/yashrane/Dog-Breed-Identification)
